@@ -8,11 +8,33 @@ import Room from './Room';
 @observer
 export default class App extends React.Component {
   render() {
-    return (
-      <div>
-        <DevTool />
-        <h1>{JSON.stringify(toJS(this.props.state))}</h1>
-      </div>
-    );
+    const { state } = this.props;
+
+    if(!state.user){
+      return (
+        <Prompt
+          setUser={state.setUser}
+        />
+      )
+    } else if(!state.activeRoomId){
+      return (
+        <Lobby
+          user={state.user}
+          rooms={state.rooms}
+          setRooms={state.setRooms}
+          setActiveRoomId={state.setActiveRoomId}
+        />
+      )
+    } else {
+      return (
+        <Room
+          user={state.user}
+          roomId={state.activeRoomId}
+          room={state.activeRoom}
+          update={state.updateActiveRoom}
+          exit={() => state.setActiveRoomId(null)}
+        />
+      )
+    }
   }
 }

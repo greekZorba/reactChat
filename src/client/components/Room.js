@@ -2,7 +2,7 @@ import React from 'react'
 import { observer } from 'mobx-react'
 
 @observer
-export default class Room extend React.Component{
+export default class Room extends React.Component{
   state = { message: null, loading: true };
   // TODO: fetch room by this.props.roomId and update room data by this.props.update
   // TODO: listen to server message event and append messages by this.props.appendMessage
@@ -62,7 +62,7 @@ export default class Room extend React.Component{
               </form>
             </li>
           </ul>
-          <button onClick={this.props.exit}나가기</button>
+          <button onClick={this.props.exit}>나가기</button>
           </div>
           <div className='chat-room-users'>
             <ul>
@@ -70,7 +70,7 @@ export default class Room extend React.Component{
                 <li key={user.id}>
                   <img src={user.avatarUrl} width={20} />
                   <span>{user.nickname}</span>
-                </li>  
+                </li>
               ))}
             </ul>
           </div>
