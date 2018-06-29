@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { observer } from 'mobx-react';
 import Prompt from './Prompt';
 import Lobby from './Lobby';
@@ -10,13 +9,14 @@ export default class App extends React.Component {
   render() {
     const { state } = this.props;
 
-    if(!state.user){
+    if (!state.user) {
       return (
         <Prompt
           setUser={state.setUser}
         />
       )
-    } else if(!state.activeRoomId){
+
+    } else if (!state.activeRoomId) {
       return (
         <Lobby
           user={state.user}
@@ -25,6 +25,7 @@ export default class App extends React.Component {
           setActiveRoomId={state.setActiveRoomId}
         />
       )
+
     } else {
       return (
         <Room

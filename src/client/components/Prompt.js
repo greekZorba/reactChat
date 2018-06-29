@@ -3,16 +3,16 @@ import { observer } from 'mobx-react';
 import { avatarUrls } from '../core/data';
 
 @observer
-export default class Prompt extends React.Component{
-  state = { loading: false, avatarUrl: avatarUrls[0], nickname: null};
+export default class Prompt extends React.Component {
+  state = { loading: false, avatarUrl: avatarUrls[0], nickname: null };
 
   setAvatarUrl = (avatarUrl) => {
-    if(this.state.loading) return;
+    if (this.state.loading) return;
     this.setState(state => ({...state, avatarUrl}))
   }
 
   setNickname = (nickname) => {
-    if(this.state.loading) return;
+    if (this.state.loading) return;
     this.setState(state => ({...state, nickname}))
   }
 
@@ -20,20 +20,21 @@ export default class Prompt extends React.Component{
     e.preventDefault();
 
     const { avatarUrl, nickname, loading } = this.state;
-    if(loading) return;
+    if (loading) return;
 
-    this.setState(state => ({...state, loading: true}))
+    this.setState(state => ({...state, loading: true }))
 
+    // TODO: login as and set this.props.state.user
     setTimeout(() => {
       this.props.setUser({ id: 9999, nickname, avatarUrl });
     }, 500);
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.nicknameInputRef.focus();
   }
 
-  render(){
+  render() {
     return (
       <div className='chat-prompt'>
         <h1>PROMPT</h1>
@@ -53,7 +54,7 @@ export default class Prompt extends React.Component{
                 <li key={key}>
                   <img
                     src={avatarUrl}
-                    width={this.state.avatarUrl == avatarUrl ? 80 : 40 }
+                    width={this.state.avatarUrl == avatarUrl ? 80 : 40}
                     onClick={() => this.setAvatarUrl(avatarUrl)}
                   />
                 </li>

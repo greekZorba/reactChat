@@ -8,7 +8,7 @@ class State {
   @observable activeRoomId = null;
   @observable roomFixed = false;
 
-  @computed get activeRoom(){
+  @computed get activeRoom() {
     return this.activeRoomId && this.rooms.find(room => room.id == this.activeRoomId);
   }
 
@@ -25,20 +25,20 @@ class State {
   }
 
   @action updateActiveRoom = (roomData = {}) => {
-    if(!this.activeRoomId) return;
+    if (!this.activeRoomId) return;
 
-    //existing room
-    if(this.activeRoom){
+    // existing room
+    if (this.activeRoom) {
       this.activeRoom.update(roomData);
 
-      // newly created room
+    // newly created room
     } else {
       this.rooms = [...this.rooms, new room(roomData)];
     }
   }
 
-  constructor({ activeRoomId = null } = {}){
-    if(!isNaN(activeRoomId)){
+  constructor({ activeRoomId = null } = {}) {
+    if (!isNaN(activeRoomId)) {
       this.activeRoomId = activeRoomId;
       this.roomFixed = true;
     }

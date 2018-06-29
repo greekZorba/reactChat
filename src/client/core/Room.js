@@ -7,9 +7,9 @@ class Room {
   @observable messages = [];
 
   @action update = ({ title, users, messages }) => {
-    if(title) this.title = title;
-    if(users) this.users = users.map(userData => new User(userData));
-    if(messages) this.message = messages.map(messageData => new Message(messageData));
+    if (title) this.title = title;
+    if (users) this.users = users.map(userData => new User(userData));
+    if (messages) this.messages = messages.map(messageData => new Message(messageData));
   }
 
   @action appendMessage = (messageData = {}) => {
