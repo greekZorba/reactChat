@@ -7,12 +7,12 @@ import Room from './Room';
 @observer
 export default class App extends React.Component {
   render() {
-    const { state } = this.props;
+    const { state, socket } = this.props;
 
     if (!state.user) {
       return (
         <Prompt
-          setUser={state.setUser}
+          login={socket.login}
         />
       )
 
@@ -21,8 +21,9 @@ export default class App extends React.Component {
         <Lobby
           user={state.user}
           rooms={state.rooms}
-          setRooms={state.setRooms}
-          setActiveRoomId={state.setActiveRoomId}
+          fetchRooms={socket.fetchRooms}
+          createRoom={socket.createRoom}
+          enterRoomById={id => state.enterRoom(id)}
         />
       )
 

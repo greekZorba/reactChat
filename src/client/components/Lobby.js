@@ -1,27 +1,44 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { dummyRooms } from '../core/data';
+import { Card, Header, Form, Button, Input, Image, Dimmer, Loader, List } from 'semantic-ui-react';
 
 @observer
 export default class Lobby extends React.Component {
   state = { loading: true, creatingRoom: false, roomTitle: null };
 
   componentDidMount() {
-    // TODO: fetch rooms
-    setTimeout(() => {
-      this.props.setRooms(dummyRooms)
-      this.setState(state => ({...state, loading: false}))
-    }, 500)
+    this.fetchRoomsInterval = setInterval(this.fetchRooms, 5000);
+    this.fetchRooms();
+  }
+
+  componentWillUnmount(){
+    if(this.fetchRoomsInterval) clearInterval(this.fetchRoomsInterval);
+  }
+
+  fetchRooms = () => {
+    this.props.fetchRooms()
+      .then(() => {
+        this.setState(state => ({...state, loading: false}))
+
+        if(this.props.rooms.length == 0){
+          this.roomTitleInputRef.focus();
+        }
+      })
   }
 
   enterRoom = (room) => {
-    this.props.setActiveRoomId(room.id);
+    this.props.enterRoomById(room.id);
   }
 
-  createRoom = () => {
-    if(this.state.creatingRoom) return;
+  createRoom = (e) => {
+    e.preventDefault();
+
+    const title = this.state.roomTitle && this.state.roomTitle.trim();
+
+    if(this.state.creatingRoom || !title) return this.roomTitleInputRef.focus();
+    
     this.setState(state => ({...state, creatingRoom: true}))
-    //TODO: create room and enter room
+    this.props.createRoom({ title });
   }
 
   setRoomTitle = (roomTitle) => {
@@ -32,30 +49,55 @@ export default class Lobby extends React.Component {
     const { rooms } = this.props;
 
     return (
-      <div className='chat-lobby'>
-        <h1>LOBBY</h1>
-        <ul>
-          {this.state.loading && rooms.length == 0 ? (
-            <li>채팅방 목록을 불러오는 중...</li>
-          ) : rooms.map(room => (
-            <li
-              key={room.id}
-              onClick={() => this.enterRoom(room)}
-            >
-              <span>{room.title} <small>({room.users.length.toLocaleString()})</small></span>
-            </li>
-          ))}
-          <li>
-            <input
-              type='text'
-              value={this.state.roomTitle}
-              onChange={e => this.setRoomTitle(e.target.value)}
-              placeholder='새로운 채팅방 제목'
-            />
-            <button onClick={this.createRoom}>개설하기</button>
-          </li>
-        </ul>
-      </div>
+      <Card fluid raised>
+        <Card.Content
+          header={
+            <Header content='입장 할 채팅방을 선택하세요.' icon='comments'/>
+          }
+          description={
+            <Dimmer.Dimmable className='flex-vert'>
+              <Dimmer active={this.state.loading && rooms.length == 0} inverted>
+                <Loader size='large'/>
+              </Dimmer>
+
+              <List selection relaxed='very' className='flex-top'>
+                {rooms.length > 0 ? rooms.map(room => (
+                  <List.Item
+                    key={room.id}
+                    onClick={() => this.enterRoom(room)}
+                  >
+                  <List.Content>
+                    <List.Header as='h3' className='elipsis'>{room.title}</List.Header>
+                    <List.Description>{room.users.length.toLocaleString()}명 접속 중</List.Description>
+                  </List.Content>
+                </List.Item>
+              )) : (
+                <List.Item style={{cursor: 'default', background: 'none'}}>
+                  <List.Content>
+                    <List.Description>개설된 채팅방이 없습니다.</List.Description>
+                  </List.Content>
+                </List.Item>
+              )}
+              </List>
+
+              <List.Item className='flex-bottom'>
+                <form onSubmit={this.createRoom}>
+                  <Input
+                    fluid
+                    ref={ref => this.roomTitleInputRef = ref}
+                    size='large'
+                    action={{content: '개설하기', color: !this.state.loading && rooms.length == 0 ? 'blue' : null}}
+                    placeholder='또는 개설할 채팅방의 제목을 입력하세요.'
+                    value={this.state.roomTitle}
+                    onChange={e => this.setRoomTitle(e.target.value)}
+                    />
+                  <input type='submit' style={{display: 'none'}} />
+                </form>
+              </List.Item>
+            </Dimmer.Dimmable>
+          }
+        />
+        </Card>
     )
   }
 }

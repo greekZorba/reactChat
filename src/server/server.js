@@ -27,6 +27,7 @@ const renderFullPage = html => {
     <head>
       <title>Codeflow Chat</title>
       <link rel="stylesheet" href="/static/bundle.css"/>
+      <meta name="viewport" content="width=device-width, user-scalable=no">
     </head>
     <body>
       <section id="app"><div>${html}</div></section>
@@ -43,7 +44,7 @@ app.use(logger('dev'));
 //Root
 app.get('*', function(req, res) {
   const initView = renderToString((
-    <App state={{}} />
+    <App state={{}} socket={{}} />
   ));
   const page = renderFullPage(initView);
   res.status(200).send(page);
@@ -60,6 +61,24 @@ process.on('uncaughtException', evt => {
   console.log('uncaughtException: ', evt);
 });
 
-app.listen(3000, function(){
+// Attach ws server and listen
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
+server.listen(3000, function(){
   console.log('Listening on port 3000');
 });
+
+if(process.env.NODE_ENV != 'production'){
+  const fs = require('fs');
+  io.on('connection', function(...args){
+    // Dynamically reload socket handler for fast development environment
+    // Invalidate all cached module in current directory
+    fs.readdirSync(__dirname).forEach(file => {
+      delete require.cache[require.resolve('./${file}')];
+    });
+    return require('./socket').default.apply(null, args);
+  });
+} else {
+  io.on('connection', require('./socket').default);
+}
