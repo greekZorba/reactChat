@@ -62,6 +62,14 @@ class Socket {
       this.state.setActiveRoomId(null);
     })
   }
+
+  messageToRoom = ({ content }) => {
+    return new Promise((resolve, reject) => {
+      console.log('message', {id: this.state.activeRoomId, content })
+      this.io.emit('message', {id: this.state.activeRoomId, content});
+      resolve();
+    })
+  }
 }
 
 

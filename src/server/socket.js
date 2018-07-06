@@ -1,6 +1,17 @@
 import Room from './Room';
 
-export default function socketHandler(socket){
+const LOBBY_ROOM_ID = "LOBBY";
+
+export default function createSocketHandler(io){
+
+  // ** clear empty rooms in interval globally
+  if(global.clearEmptyRoomsInterval) clearInterval(global.clearEmptyRoomsInterval);
+  global.clearEmptyRoomsInterval = setInterval(() => {
+    Room.clearEmptyRooms();
+    io.to(LOBBY_ROOM_ID).emit('rooms', Room.instances);
+  }, 1000);
+ 
+  return function socketHandler(socket){
 
   // 1: login(connected) -> emit logined with userData
   const { nickname, avatarUrl } = socket.handshake.query;
@@ -47,4 +58,15 @@ export default function socketHandler(socket){
 
   // unexpected disconnection
   socket.on('disconnect', leaveRoomHandler);
+
+  // 6: message -> broadcast room with RoomData(messages)
+  socket.on('message', ({id, user, content}) => {
+    const message = Room.message({ id, user, content });
+    if(message){
+      const roomData = { message };
+      socket.emit('room', roomData); // to self
+      socket.to(id).emit('room', roomData); // to other members
+    }
+  })
+}
 }

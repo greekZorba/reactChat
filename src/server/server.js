@@ -64,9 +64,10 @@ process.on('uncaughtException', evt => {
 // Attach ws server and listen
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+const port = process.env.PORT || 3000;
 
-server.listen(3000, function(){
-  console.log('Listening on port 3000');
+server.listen(port, function(){
+  console.log('Listening on port '+port);
 });
 
 if(process.env.NODE_ENV != 'production'){
@@ -75,10 +76,10 @@ if(process.env.NODE_ENV != 'production'){
     // Dynamically reload socket handler for fast development environment
     // Invalidate all cached module in current directory
     fs.readdirSync(__dirname).forEach(file => {
-      delete require.cache[require.resolve('./${file}')];
+      delete require.cache[require.resolve(`./${file}`)];
     });
-    return require('./socket').default.apply(null, args);
+    return require('./socket').default(io).apply(null, args);
   });
 } else {
-  io.on('connection', require('./socket').default);
+  io.on('connection', require('./socket').default(io));
 }

@@ -18,10 +18,6 @@ class Room {
     }
   }
 
-  @action appendMessage = (messageData = {}) => {
-    this.messages = [...this.messages, new Message(messageData)]
-  }
-
   constructor({ id, title, users, messages }) {
     this.id = id;
     this.update({ title, users, messages });
