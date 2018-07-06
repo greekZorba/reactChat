@@ -26,7 +26,7 @@ class Socket {
 
   enterLobby = () => {
     return new Promise((resolve, reject) => {
-      consle.log('enterLobby');
+      console.log('enterLobby');
       this.io.emit('enterLobby');
 
       this.io.on('rooms', (roomsData) => {
