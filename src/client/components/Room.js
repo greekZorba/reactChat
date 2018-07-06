@@ -5,7 +5,7 @@ import { Card, Header, Form, Button, Input, Image, Dimmer, Loader, Feed, List } 
 @observer
 export default class Room extends React.Component {
   state = { messageContent: null, loading: false, messaging: false };
-  lastMessageCount = 0;
+  lastMessagesCount = 0;
 
   componentDidMount() {
     this.inputMessageInputRef.focus()
@@ -14,7 +14,7 @@ export default class Room extends React.Component {
 
   componentDidUpdate(){
     const messagesCount = this.props.room ? this.props.room.messages.length : 0;
-    if(this.lastMessageCount < messagesCount){
+    if(this.lastMessagesCount < messagesCount){
       this.lastMessagesCount = messagesCount;
       this.scrollMessagesContainerToBottom();
     }

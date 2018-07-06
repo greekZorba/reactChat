@@ -24,16 +24,25 @@ class Socket {
     })
   }
 
-  fetchRooms = () => {
+  enterLobby = () => {
     return new Promise((resolve, reject) => {
-      console.log('fetchRooms')
-      this.io.emit('fetchRooms');
+      consle.log('enterLobby');
+      this.io.emit('enterLobby');
 
-      this.io.once('rooms', (roomsData) => {
+      this.io.on('rooms', (roomsData) => {
         console.log('rooms', roomsData);
         this.state.setRooms(roomsData);
-        resolve();
+        resolve(this.state.rooms);
       })
+    })
+  }
+
+  leaveLobby = () => {
+    return new Promise((resolve, reject) => {
+      console.log('leaveLobby');
+      this.io.emit('leaveLobby');
+      this.io.off('rooms');
+      resolve();
     })
   }
 
@@ -52,7 +61,26 @@ class Socket {
         })
       })
     })
-}
+  }
+
+  enterRoom = ({ id }) => {
+    return new Promise((resolve, reject) => {
+      console.log('enterRoom', { id })
+      this.io.emit('enterRoom', { id })
+
+      this.io.once('room', (roomData) => {
+        console.log('enterRoom -> room', roomData);
+        this.state.setActiveRoomId(id);
+        this.state.updateActiveRoom(roomData);
+        resolve(this.state.activeRoom)
+
+        this.io.on('room', (roomData) => {
+          console.log('room', roomData);
+          this.state.updateActiveRoom(roomData);
+        })
+      })
+    })
+  }
 
   leaveRoom = () => {
     return new Promise((resolve, reject) => {
@@ -60,6 +88,7 @@ class Socket {
       this.io.emit('leaveRoom');
       this.io.off('room');
       this.state.setActiveRoomId(null);
+      resolve();
     })
   }
 
